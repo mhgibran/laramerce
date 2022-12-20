@@ -40,6 +40,7 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['admin'])->group(function () {
         Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::resource('product', ProductController::class)->except(['edit']);
+        Route::post('report/export', [ReportController::class, 'export'])->name('report.export');
         Route::resource('report', ReportController::class)->only(['index']);
     });
 });

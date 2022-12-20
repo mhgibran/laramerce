@@ -11,28 +11,29 @@
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2">
                 <h1 class="h2">Transaction Reports</h1>
-                <div class="btn-toolbar mb-2 mb-md-0">
+                {{-- <div class="btn-toolbar mb-2 mb-md-0">
                     <div class="btn-group mr-2">
                         <button type="button" class="btn btn-sm btn-outline-secondary"
                             onclick="exportAsExcel()">
                             Export
                         </button>
                     </div>
-                </div>
+                </div> --}}
             </div>
             <div
-                class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-                <form action="{{ route('report.index') }}" method="GET">
+                class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3">
+                <form action="{{ route('report.export') }}" method="POST">
+                    @csrf
                     <div class="row">
                         <div class="col">
                             <label for="start">Start Date</label>
                             <input type="date" id="start" name="start" class="form-control" placeholder="Start Date"
-                                value="{{ $start ?? now()->format('Y-m-d') }}">
+                                value="{{ request()->get('start') ?? \Carbon\Carbon::now()->subDays(30)->format('Y-m-d') }}">
                         </div>
                         <div class="col">
                             <label for="end">End Date</label>
                             <input type="date" id="end" name="end" class="form-control" placeholder="End Date"
-                                value="{{ $end ?? now()->format('Y-m-d') }}">
+                                value="{{ request()->get('end') ?? \Carbon\Carbon::now()->format('Y-m-d') }}">
                         </div>
                         <div class="col">
                             <button type="submit" class="btn btn-success"
@@ -44,7 +45,7 @@
                 </form>
             </div>
 
-            <div class="table-responsive">
+            {{-- <div class="table-responsive">
                 <table id="reportTable" class="table table-bordered table-sm">
                     <thead>
                         <tr class="exludeRow">
@@ -99,7 +100,7 @@
                         @endforelse
                     </tbody>
                 </table>
-            </div>
+            </div> --}}
     </div>
 </div>
 </div>
