@@ -19,9 +19,9 @@
                 enctype="multipart/form-data">
                 @csrf
                 <div class="mb-3">
-                    <label for="product">Product Name</label>
-                    <input type="text" class="form-control" id="product" name="product" placeholder="Product Name"
-                        required value="{{ old('product') }}">
+                    <label for="name">Product Name</label>
+                    <input type="text" class="form-control" id="name" name="name" placeholder="Product Name"
+                        required value="{{ old('name') }}">
                 </div>
                 <div class="mb-3">
                     <label for="price">Product Price</label>

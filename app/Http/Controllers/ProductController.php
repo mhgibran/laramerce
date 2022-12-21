@@ -7,56 +7,50 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
-        $products = Product::orderBy('created_at','DESC')->get();
-        
         return view('pages.product', [
             'title' => 'All Product - Laramerce',
-            'products' => $products
+            'products' => Product::orderBy('created_at','DESC')->get()
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {
         return view('pages.product-create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
-        DB::beginTransaction();
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string',
+            'price' => 'required|integer',
+            'image' => 'required|image|max:2048' 
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
         try {
+            DB::beginTransaction();
+            
+            $product = Product::create($validator->validated());
+
             if ($request->file('image')) {
                 $image = Storage::disk('public')->putFile(
                     'public/product',
                     $request->file('image')
                 );
+
+                $product->update([
+                    'image' => substr($image, 7)
+                ]);
             }
-    
-            Product::create([
-                'name' => $request->product,
-                'price' => $request->price,
-                'image' => $request->file('image') ? substr($image, 7) : null,
-            ]);
     
             DB::commit();
             return redirect(route('product.index'))->withSuccess('Product created successfully!');
@@ -66,12 +60,6 @@ class ProductController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
         $product = Product::findOrFail($id);
@@ -81,19 +69,22 @@ class ProductController extends Controller
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, Product $product)
     {
-        DB::beginTransaction();
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string',
+            'price' => 'required|integer',
+            'image' => 'nullable|image|max:2048'
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
         try {
-            $product->name = $request->product;
-            $product->price = $request->price;
+            DB::beginTransaction();
+
+            $product->update($validator->validated());
             
             if ($request->file('image')) {
                 Storage::disk('public')->delete($product->image);
@@ -102,11 +93,12 @@ class ProductController extends Controller
                     'public/product',
                     $request->file('image')
                 );
+
+                $product->update([
+                    'image' => substr($image, 7)
+                ]);
             }
-
-            $product->image = $request->file('image') ? substr($image, 7) : null;
-            $product->update();
-
+            
             DB::commit();
             return redirect(route('product.index'))->withSuccess('Product updated successfully!');
         } catch (\Exception $errors) {
@@ -115,12 +107,6 @@ class ProductController extends Controller
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(Product $product)
     {
         Storage::disk('public')->delete($product->image);

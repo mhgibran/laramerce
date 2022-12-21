@@ -16,6 +16,13 @@
                 </a>
             </li>
             <li class="nav-item">
+                <a class="nav-link @if (Str::contains(Route::currentRouteName(), 'user')) active @endif" 
+                    href="{{ route('user.index') }}">
+                    <span data-feather="shopping-cart"></span>
+                    User
+                </a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link @if (Str::contains(Route::currentRouteName(), 'report')) active @endif" 
                     href="{{ route('report.index') }}">
                     <span data-feather="shopping-cart"></span>

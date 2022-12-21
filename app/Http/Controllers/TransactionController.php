@@ -25,8 +25,9 @@ class TransactionController extends Controller
 
     public function store(Request $request)
     {
-        DB::beginTransaction();
         try {
+            DB::beginTransaction();
+      
             $carts = Cart::where('user_id',Auth::user()->id)->get();
             $total = 0;
 
@@ -34,13 +35,11 @@ class TransactionController extends Controller
                 $total += $cart->quantity * $cart->product->price;
             }
             
-            $lastTransaction = Transaction::select('id')
-                                ->orderBy('created_at','DESC')
-                                ->value('id');
+            $lastTransaction = Transaction::count();
+            
             if (!$lastTransaction) {
                 $lastTransaction = 0;
             }
-
             $transNumber = 'TR' . str_pad($lastTransaction + 1, 8, "0", STR_PAD_LEFT);
 
             $transaction = Transaction::create([
@@ -64,7 +63,7 @@ class TransactionController extends Controller
             return redirect(route('transaction.index'))->withSuccess('Checkout successfully!');
         } catch (\Exception $errors) {
             DB::rollback();
-            return redirect()->back()->withErrors('Checkout failed!')->withInput();
+            return redirect()->back()->withErrors($errors->getMessage())->withInput();
         }
     }
 

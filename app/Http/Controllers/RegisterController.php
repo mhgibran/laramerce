@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class RegisterController extends Controller
 {
@@ -17,18 +19,26 @@ class RegisterController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => 'required|max:255',
             'email' => 'required|unique:users|max:255',
             'password' => 'required|max:255',
         ]);
 
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
 
-        return redirect(route('login'))->withSuccess('Create user successfully! Please login..')->withInput();
+        try {
+            DB::beginTransaction();
+            
+            User::create($validator->validated());
+
+            DB::commit();
+            return redirect(route('login'))->withSuccess('Create user successfully! Please login..')->withInput();
+        } catch (\Exception $error) {
+            DB::rollback();
+            return redirect()->back()->withErrors($error->getMessage())->withInput();
+        }
     }
 }

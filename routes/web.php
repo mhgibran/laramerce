@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ProductController;
@@ -42,5 +43,6 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('product', ProductController::class)->except(['edit']);
         Route::post('report/export', [ReportController::class, 'export'])->name('report.export');
         Route::resource('report', ReportController::class)->only(['index']);
+        Route::resource('user', UserController::class)->only(['index']);
     });
 });

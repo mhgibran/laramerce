@@ -32,4 +32,14 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
     ];
+
+    public function scopeIsCustomer($query)
+    {
+        return $query->where('roles','user');
+    }
+
+    public function transaction()
+    {
+        return $this->hasMany(Transaction::class, 'user_id', 'id');
+    }
 }

@@ -20,8 +20,8 @@
                 @csrf
                 @method('PUT')
                 <div class="mb-3">
-                    <label for="product">Product Name</label>
-                    <input type="text" class="form-control" id="product" name="product" placeholder="Product Name"
+                    <label for="name">Product Name</label>
+                    <input type="text" class="form-control" id="name" name="name" placeholder="Product Name"
                         required value="{{ $product->name }}">
                 </div>
                 <div class="mb-3">

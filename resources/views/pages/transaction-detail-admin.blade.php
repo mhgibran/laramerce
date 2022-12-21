@@ -46,15 +46,21 @@
                     </thead>
                     <tbody>
                         @forelse ($transaction->items as $key => $item)
-                            <tr>
-                                <td>{{ $key + 1 }}</td>
-                                <td>
-                                    <img src="{{ $item->product->image ? asset('storage/public/' . $item->product->image) : env('DEFAULT_IMAGE') }}" alt="{{ $item->product->name }}" style="width: 56px; height: auto; object-fit: cover;">
-                                </td>
-                                <td>{{ $item->product->name }}</td>
-                                <td>{{ 'Rp ' . number_format($item->product->price) }}</td>
-                                <td>{{ $item->quantity }}</td>
-                            </tr>
+                            @if ($item->product)
+                                <tr>
+                                    <td>{{ $key + 1 }}</td>
+                                    <td>
+                                        <img src="{{ $item->product->image ? asset('storage/public/' . $item->product->image) : env('DEFAULT_IMAGE') }}" alt="{{ $item->product->name }}" style="width: 56px; height: auto; object-fit: cover;">
+                                    </td>
+                                    <td>{{ $item->product->name }}</td>
+                                    <td>{{ 'Rp ' . number_format($item->product->price) }}</td>
+                                    <td>{{ $item->quantity }}</td>
+                                </tr>
+                            @else
+                                <tr>
+                                    <td colspan="5">Product is deleted</td>
+                                </tr>
+                            @endif
                         @empty
                             <tr>
                                 <td colspan="5">Product items is empty! <a href="{{ route('home') }}">Let's start shopping!</a></td>

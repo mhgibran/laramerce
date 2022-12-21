@@ -9,11 +9,9 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $products = Product::all();
-        
         return view('pages.home', [
             'title' => 'Home - Laramerce',
-            'products' => $products
+            'products' => Product::all()
         ]);
     }
 }
