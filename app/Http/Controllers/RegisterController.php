@@ -32,7 +32,11 @@ class RegisterController extends Controller
         try {
             DB::beginTransaction();
             
-            User::create($validator->validated());
+            User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password)
+            ]);
 
             DB::commit();
             return redirect(route('login'))->withSuccess('Create user successfully! Please login..')->withInput();
